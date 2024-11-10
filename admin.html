@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Area</title>
+</head>
+<body>
+    <h1>Welcome to the Admin Area</h1>
+    <p>If you are seeing this, you are authenticated.</p>
+
+    <script>
+        async function validateAccess() {
+            const storedHash = sessionStorage.getItem("adminHash");
+
+            // Compute the valid hashes for authorized users
+            const validHashes = [
+                await generateHash("Alan Davispassword1"),
+                await generateHash("ADpassword2")
+                    
+            ];
+
+            if (!storedHash || !validHashes.includes(storedHash)) {
+                // If hash is invalid or missing, redirect to login
+                alert("Unauthorized access. Redirecting to login.");
+                window.location.href = "login.html";
+            }
+        }
+
+        async function generateHash(input) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(input);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        }
+
+        // Run validation on page load
+        validateAccess();
+    </script>
+</body>
+</html>
